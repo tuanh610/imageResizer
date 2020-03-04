@@ -1,0 +1,27 @@
+service: imageresizer
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ap-southeast-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:GetObjectAcl
+        - s3:PutObjectAcl
+      Resource: 'arn:aws:s3:::imagestore.tuanh1234/*'
+
+functions:
+  resize:
+    handler: handler.call
+    layers:
+      - arn:aws:lambda:ap-southeast-1:705165197057:layer:py_dependencies:2
+    environment:
+      BUCKET: imagestore.tuanh1234
+      REGION: ap-southeast-1
+    events:
+      - http:
+          path: /{proxy+}
+          method: get
